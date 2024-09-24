@@ -1,12 +1,13 @@
 <template>
   <div class="ohrm-input-field">
     <label :for="$attrs.id">{{ label }}</label>
-    <component :is="component" v-bind="$attrs"></component>
+    <component :is="component" :modelValue="modelValue" v-bind="$attrs"></component>
+    <p v-if="message">{{ message }}</p>
   </div>
 </template>
 
 <script lang="ts">
-import { computed, defineComponent } from 'vue'
+import { ref, computed, defineComponent } from 'vue'
 import TextInput from '@/components/TextInput.vue'
 import TextArea from '@/components/TextArea.vue'
 import Dropdown from '@/components/Dropdown.vue'
@@ -30,6 +31,8 @@ export default defineComponent({
   props: {
     type: { type: String, required: true },
     label: { type: String, required: true },
+    rules: { type: Array, default: () => [] },
+    modelValue: {}
   },
   components: {
     TextInput,
@@ -41,10 +44,23 @@ export default defineComponent({
     PasswordInput
   },
   setup(props) {
+    const message = ref('')
     const component = computed(() => TYPE_MAP[props.type] ?? TYPE_MAP.text)
 
+    window.addEventListener('submit', () => {
+      const isValid = props.rules.reduce<string>((acc, curr: unknown) => {
+        const validationResponse = (curr as (value: string) => boolean | string)(
+          props.modelValue as string
+        )
+        return typeof validationResponse === 'string' ? validationResponse : ''
+      }, '')
+
+      if (isValid) message.value = isValid
+    })
+
     return {
-      component
+      component,
+      message
     }
   }
 })

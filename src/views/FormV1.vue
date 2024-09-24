@@ -4,8 +4,21 @@
   <br />
   <main>
     <Form @submit.prevent="onSubmitted">
-      <InputField id="username" type="text" label="Username" v-model="username" />
-      <InputField id="password" type="password" label="Password" v-model="password" />
+      <InputField
+        v-if="agreeToTerms"
+        id="username"
+        type="text"
+        label="Username"
+        v-model="username"
+        :rules="rules.username"
+      />
+      <InputField
+        id="password"
+        type="password"
+        label="Password"
+        v-model="password"
+        :rules="rules.password"
+      />
       <InputField id="description" type="textarea" label="Description" v-model="description" />
       <InputField
         id="country"
@@ -37,6 +50,7 @@
 </template>
 
 <script lang="ts">
+import { alwaysInvalid, maxLength, required } from '@/utils/rules'
 import { defineComponent, ref, computed } from 'vue'
 import Form from '@/components/Form.vue'
 import Button from '@/components/Button.vue'
@@ -56,9 +70,14 @@ export default defineComponent({
     const password = ref('')
     const description = ref('')
     const selectedCountry = ref('')
-    const agreeToTerms = ref(false)
+    const agreeToTerms = ref(true)
     const contactMethod = ref('')
     const birthdate = ref('')
+
+    const rules = {
+      username: [alwaysInvalid, maxLength(8)],
+      password: [maxLength(8)]
+    }
 
     const countryOptions = [
       { value: '', text: 'Select a country' },
@@ -87,6 +106,7 @@ export default defineComponent({
     }
 
     return {
+      rules,
       username,
       password,
       description,
