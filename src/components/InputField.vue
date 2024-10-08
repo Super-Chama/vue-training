@@ -16,7 +16,7 @@ import RadioGroup from '@/components/RadioGroup.vue'
 import DateInput from '@/components/DateInput.vue'
 import PasswordInput from '@/components/PasswordInput.vue'
 
-const TYPE_MAP = {
+const TYPE_MAP: Record<string, string> = {
   text: 'text-input',
   textarea: 'text-area',
   dropdown: 'dropdown',
@@ -47,7 +47,7 @@ export default defineComponent({
     const message = ref('')
     const component = computed(() => TYPE_MAP[props.type] ?? TYPE_MAP.text)
 
-    window.addEventListener('submit', () => {
+    window.addEventListener('submit', ($e: SubmitEvent) => {
       const isValid = props.rules.reduce<string>((acc, curr: unknown) => {
         const validationResponse = (curr as (value: string) => boolean | string)(
           props.modelValue as string
@@ -55,7 +55,10 @@ export default defineComponent({
         return typeof validationResponse === 'string' ? validationResponse : ''
       }, '')
 
-      if (isValid) message.value = isValid
+      if (isValid) {
+        message.value = isValid
+        $e.stopImmediatePropagation()
+      }
     })
 
     return {

@@ -50,7 +50,7 @@
 </template>
 
 <script lang="ts">
-import { alwaysInvalid, maxLength, required } from '@/utils/rules'
+import { maxLength, required } from '@/utils/rules'
 import { defineComponent, ref, computed } from 'vue'
 import Form from '@/components/Form.vue'
 import Button from '@/components/Button.vue'
@@ -75,8 +75,8 @@ export default defineComponent({
     const birthdate = ref('')
 
     const rules = {
-      username: [alwaysInvalid, maxLength(8)],
-      password: [maxLength(8)]
+      username: [required, maxLength(8)],
+      password: [required, maxLength(8)]
     }
 
     const countryOptions = [
